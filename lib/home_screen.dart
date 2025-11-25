@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:team/QR_Rental.dart';
 import '../mobility_fix_screen.dart';
 
 
@@ -188,20 +187,12 @@ class _ActionButtons extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => MobilityFixScreen(),
               ),
-            );
-          },
+            );},
         ),
         const SizedBox(height: 18),
         _PrimaryButton(
           text: '모빌리티 대여',
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MyApp(),
-              ),
-            );
-          },
+          onPressed: () {},
         ),
       ],
     );

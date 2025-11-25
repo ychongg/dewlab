@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:team/home_screen.dart';
 import 'home.dart';
 
 class Mileage extends StatelessWidget {
@@ -27,7 +26,7 @@ class Mileage extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const HomeScreen()),
+                    MaterialPageRoute(builder: (_) => const Home2()),
                   );
                 },
                 child: Container(

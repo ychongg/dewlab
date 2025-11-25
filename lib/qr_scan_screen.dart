@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'mileage.dart';
+
 class QrScanScreen extends StatelessWidget {
   const QrScanScreen({super.key});
 
@@ -23,7 +23,7 @@ class QrScanScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const Mileage(),
+                    builder: (_) => const QrNextScreen(),
                   ),
                 );
               },
@@ -53,3 +53,19 @@ class QrScanScreen extends StatelessWidget {
   }
 }
 
+class QrNextScreen extends StatelessWidget {
+  const QrNextScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("다음 화면")),
+      body: const Center(
+        child: Text(
+          "QR 다음 화면입니다!",
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+  }
+}

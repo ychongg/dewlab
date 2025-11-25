@@ -1,6 +1,7 @@
 // rental_screens.dart
 import 'package:flutter/material.dart';
 import 'qr_rental.dart';
+import 'page9.dart';   // Page9 import 추가
 
 class RentalCompleteScreen extends StatelessWidget {
   @override
@@ -51,7 +52,7 @@ class HomeAfterRentalScreen extends StatelessWidget {
             height: double.infinity,
           ),
 
-          // 모빌리티 반납 버튼 위치(원하는 대로 수정 가능)
+          // 모빌리티 반납 버튼 (Page9으로 이동)
           Positioned(
             bottom: 100,
             left: 40,
@@ -60,7 +61,7 @@ class HomeAfterRentalScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => QRscanscreen()),
+                  MaterialPageRoute(builder: (context) => const Page9()),
                 );
               },
               child: Container(
