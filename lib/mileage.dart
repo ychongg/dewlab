@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:team/home_screen.dart';
 import 'home.dart';
 
 class Mileage extends StatelessWidget {
@@ -18,7 +19,7 @@ class Mileage extends StatelessWidget {
 
           // 홈으로 버튼 클릭 영역(투명 버튼)
           Positioned(
-            bottom: 200,   // 버튼 위치 (필요하면 조절)
+            bottom: 170,   // 버튼 위치 (필요하면 조절)
             left: 0,
             right: 0,
             child: Center(
@@ -26,7 +27,7 @@ class Mileage extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const Home2()),
+                    MaterialPageRoute(builder: (_) => const HomeScreen()),
                   );
                 },
                 child: Container(
