@@ -1,3 +1,5 @@
+// LoginPage.dart 파일 전체 내용입니다.
+
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -17,43 +19,50 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // 🔥 구글 로그인 함수
+  // 🔥 구글 로그인 함수 (serverClientId 추가로 안드로이드/에뮬레이터 환경 해결)
   Future<User?> _signInWithGoogle() async {
     try {
-      // 🔥 웹일 때: Google Sign-In은 FirebaseAuth로 직접 처리해야 함.
+      GoogleSignIn googleSignIn;
+
+      // Firebase Console에서 발급받은 Web Client ID를 상수로 정의
+      const String webClientId = "493215236742-ie6o42f5c6fr05b4u78fsa76bf3quknu.apps.googleusercontent.com";
+
       if (kIsWeb) {
-        GoogleAuthProvider authProvider = GoogleAuthProvider();
-
-        final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithPopup(authProvider);
-
-        return userCredential.user;
+        googleSignIn = GoogleSignIn(
+          clientId: webClientId,
+        );
+      } else {
+        // Android/iOS 환경: serverClientId에 Web Client ID를 지정합니다.
+        googleSignIn = GoogleSignIn(
+          serverClientId: webClientId,
+        );
       }
 
-      // 🔥 모바일(Android/iOS)
-      final GoogleSignIn googleSignIn = GoogleSignIn();
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      final googleUser = await googleSignIn.signIn();
       if (googleUser == null) return null;
 
-      final GoogleSignInAuthentication googleAuth =
-      await googleUser.authentication;
+      final googleAuth = await googleUser.authentication;
 
-      final OAuthCredential credential = GoogleAuthProvider.credential(
+      final credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
         accessToken: googleAuth.accessToken,
       );
 
-      final UserCredential userCredential =
+      final userCredential =
       await FirebaseAuth.instance.signInWithCredential(credential);
 
       return userCredential.user;
     } catch (e) {
-      print("🔥 Google 로그인 오류: $e");
+      print("로그인 오류: $e");
+      // 사용자에게 실패 메시지를 명시적으로 보여줍니다.
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("구글 로그인 실패: $e")),
+        );
+      }
       return null;
     }
   }
-
-
 
   // 이메일/비번 로그인
   Future<void> _emailLogin() async {
@@ -68,13 +77,32 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       // MainPage로 이동
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainPage()),
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainPage()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      // Firebase 인증 실패 메시지를 더 명확하게 표시
+      String message;
+      if (e.code == 'user-not-found') {
+        message = '사용자를 찾을 수 없습니다.';
+      } else if (e.code == 'wrong-password') {
+        message = '비밀번호가 일치하지 않습니다.';
+      } else if (e.code == 'invalid-email') {
+        message = '이메일 형식이 잘못되었습니다.';
+      } else {
+        message = '로그인 실패: ${e.message}';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
       );
     } catch (e) {
+      // 기타 오류 (Type Cast 오류가 있었다면 여기에 잡힙니다)
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("로그인 실패: $e")),
+        SnackBar(content: Text("로그인 실패: 알 수 없는 오류입니다. $e")),
       );
     }
   }
@@ -154,31 +182,22 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         onPressed: () async {
                           final user = await _signInWithGoogle();
-
                           if (user != null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text("로그인 성공: ${user.displayName ?? user.email}")),
                             );
-
-                            // ⭐ 로그인 성공 시 MainPage로 이동
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => const MainPage()),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("로그인 실패")),
-                            );
+                            if (context.mounted) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => const MainPage()),
+                              );
+                            }
                           }
+                          // 실패 메시지는 _signInWithGoogle 함수 내에서 처리됩니다.
                         },
-
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.network(
-                              'https://developers.google.com/identity/images/g-logo.png',
-                              width: 26,
-                            ),
                             const SizedBox(width: 12),
                             const Text(
                               '구글 로그인',
@@ -331,4 +350,3 @@ class TopArcClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
-
